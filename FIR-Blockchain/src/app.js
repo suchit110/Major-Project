@@ -1,3 +1,4 @@
+let firContract; 
 window.addEventListener('load', async () => {
     // Check if Web3 is injected (i.e., MetaMask is installed)
     if (window.ethereum) {
@@ -204,27 +205,41 @@ window.addEventListener('load', async () => {
     }
 });
 async function displayFIRs() {
-    // Get the total number of FIRs stored on the blockchain
-    const totalFIRs = await firContract.methods.getTotalFIRs().call();
-    const firListContainer = document.getElementById('firListContainer');
+    try {
+        const totalFIRs = await firContract.methods.getTotalFIRs().call();
+        console.log('Total FIRs:', totalFIRs);  // Check the total FIRs in the console
 
-    // Clear the current list before appending new FIRs
-    firListContainer.innerHTML = '';
+        const firListContainer = document.getElementById('firListContainer');
+        firListContainer.innerHTML = ''; // Clear the list before appending new FIRs
 
-    // Fetch each FIR using the index
-    for (let i = 0; i < totalFIRs; i++) {
-        const fir = await firContract.methods.getFIR(i).call();
+        if (totalFIRs === "0") {
+            firListContainer.innerHTML = "<p>No FIRs found.</p>";
+            return;
+        }
 
-        // Create a new list item for each FIR
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <strong>FIR ID:</strong> ${fir.FIRID}<br>
-            <strong>Police Station:</strong> ${fir.policeStation}<br>
-            <strong>Criminal Details:</strong> ${fir.criminalDetails}<br>
-            <strong>Incident Details:</strong> ${fir.incidentDetails}<br>
-            <strong>Victim Details:</strong> ${fir.victimDetails}<br>
-            <strong>Officer Details:</strong> ${fir.officerDetails}<br><br>
-        `;
-        firListContainer.appendChild(li);
+        for (let i = 0; i < totalFIRs; i++) {
+            const fir = await firContract.methods.getFIR(i).call();
+            console.log("FIR Data at index", i, ":", fir); // Debugging FIR data
+
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <strong>FIR ID:</strong> ${fir.FIRID}<br>
+                <strong>Police Station:</strong> ${fir.policeStation}<br>
+                <strong>Criminal Details:</strong> ${fir.criminalDetails}<br>
+                <strong>Incident Details:</strong> ${fir.incidentDetails}<br>
+                <strong>Victim Details:</strong> ${fir.victimDetails}<br>
+                <strong>Officer Details:</strong> ${fir.officerDetails}<br><br>
+            `;
+            firListContainer.appendChild(li);
+        }
+    } catch (error) {
+        console.error("Error displaying FIRs:", error);
     }
 }
+
+// Add this code at the end of your current app.js
+
+document.getElementById('viewFIRs').addEventListener('click', displayFIRs);
+
+// Modified displayFIRs function to correctly display FIRs
+
