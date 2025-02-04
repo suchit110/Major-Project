@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIR Form</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>File FIR</h2>
+        <button id="connectWalletButton">Connect Wallet</button>
+
+        <form id="firForm">
+            <label for="firID">FIR ID:</label>
+            <input type="text" id="firID" required>
+
+            <label for="policeStation">Police Station:</label>
+            <input type="text" id="policeStation" required>
+
+            <label for="criminalDetails">Criminal Details:</label>
+            <input type="text" id="criminalDetails" required>
+
+            <label for="incidentDetails">Incident Details:</label>
+            <input type="text" id="incidentDetails" required>
+
+            <label for="victimDetails">Victim Details:</label>
+            <input type="text" id="victimDetails" required>
+
+            <label for="officerDetails">Officer Details:</label>
+            <input type="text" id="officerDetails" required>
+
+            <button type="submit">Submit FIR</button>
+        </form>
+        <button id="viewFIRs">View Submitted FIRs</button>
+        <div id="firList"></div>
+        
+        
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.6.1/dist/web3.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
