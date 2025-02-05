@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FIR Location Map</title>
-    
+    <title>FIR Locations</title>
+
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/web3@latest/dist/web3.min.js"></script>
+
     <style>
         #map {
             width: 100%;
@@ -16,28 +18,73 @@
 </head>
 <body>
 
-    <h1>FIR Incident Location</h1>
+    <h1>FIR Incident Locations</h1>
     <div id="map"></div>
 
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
-        function getLocationFromURL() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('location');
+        let firContract;
+
+        async function initBlockchain() {
+            if (window.ethereum) {
+                const web3 = new Web3(window.ethereum);
+                await ethereum.request({ method: 'eth_requestAccounts' });
+
+                const contractAddress = '0x780b2ff33841A7f800978C9869A35ea2a45f7613';
+                const abi = [ 
+                    {
+                        "inputs": [
+                            { "internalType": "uint256", "name": "index", "type": "uint256" }
+                        ],
+                        "name": "getFIR",
+                        "outputs": [
+                            {
+                                "components": [
+                                    { "internalType": "string", "name": "FIRID", "type": "string" },
+                                    { "internalType": "string", "name": "policeStation", "type": "string" },
+                                    { "internalType": "string", "name": "criminalDetails", "type": "string" },
+                                    { "internalType": "string", "name": "incidentLocation", "type": "string" },
+                                    { "internalType": "string", "name": "victimDetails", "type": "string" },
+                                    { "internalType": "string", "name": "officerDetails", "type": "string" }
+                                ],
+                                "internalType": "struct FIR.FIRDetails",
+                                "name": "",
+                                "type": "tuple"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "getTotalFIRs",
+                        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                        "stateMutability": "view",
+                        "type": "function"
+                    }
+                ];
+
+                firContract = new web3.eth.Contract(abi, contractAddress);
+                loadMapWithFIRs();
+            } else {
+                alert("Please install MetaMask.");
+            }
         }
 
+        // Convert location name to latitude/longitude
         async function getCoordinates(location) {
-            const apiKey = '32596d57fca24156ba101b641438eed4'; // Replace with a real API key from OpenCage or OpenStreetMap Nominatim
+            const apiKey = '32596d57fca24156ba101b641438eed4'; // Replace with your OpenCage API key
             const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=${apiKey}`;
-
+            
             try {
                 const response = await fetch(url);
                 const data = await response.json();
+                console.log("Geocode response:", data); // Debugging log
+
                 if (data.results && data.results.length > 0) {
                     return data.results[0].geometry;
                 } else {
-                    console.error("No results found for the location");
+                    console.error("No coordinates found for:", location);
                     return null;
                 }
             } catch (error) {
@@ -46,37 +93,42 @@
             }
         }
 
-        async function initMap() {
-            const location = getLocationFromURL();
-            console.log("Location from URL:", location);
+        async function loadMapWithFIRs() {
+            const totalFIRs = await firContract.methods.getTotalFIRs().call();
+            console.log("Total FIRs:", totalFIRs);
 
-            if (location) {
-                const coordinates = await getCoordinates(location);
-                console.log("Coordinates:", coordinates);
+            const map = L.map('map').setView([20.5937, 78.9629], 5); // Default India center
 
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add a default marker to check if Leaflet works
+            L.marker([20.5937, 78.9629], { color: 'red' }).addTo(map)
+              .bindPopup("Default Marker: India Center")
+              .openPopup();
+
+            for (let i = 0; i < totalFIRs; i++) {
+                const fir = await firContract.methods.getFIR(i).call();
+                console.log(`FIR ${i} location:`, fir.incidentLocation);
+
+                const coordinates = await getCoordinates(fir.incidentLocation);
                 if (coordinates) {
-                    const map = L.map('map').setView([coordinates.lat, coordinates.lng], 13);
-
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    }).addTo(map);
-
-                    L.marker([coordinates.lat, coordinates.lng], {
-                        icon: L.icon({
-                            iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg', // Red dot icon
-                            iconSize: [20, 20],
-                            iconAnchor: [10, 10],
+                    const marker = L.marker([coordinates.lat, coordinates.lng], {
+                        icon: L.divIcon({
+                            className: 'custom-marker',
+                            html: '<div style="background:red; width:10px; height:10px; border-radius:50%;"></div>',
+                            iconSize: [10, 10]
                         })
-                    }).addTo(map).bindPopup('Incident Location');
-                } else {
-                    alert('Could not find the location. Please try again.');
+                    }).addTo(map).bindPopup(`<b>FIR ID:</b> ${fir.FIRID}<br><b>Location:</b> ${fir.incidentLocation}`);
+
+                    console.log(`Added marker at: ${coordinates.lat}, ${coordinates.lng}`);
                 }
-            } else {
-                alert('No location provided.');
             }
         }
 
-        initMap();
+        initBlockchain();
     </script>
 
 </body>
