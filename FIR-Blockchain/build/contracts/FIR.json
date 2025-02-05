@@ -43,7 +43,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -132,7 +133,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -145,7 +147,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_FIRID\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_policeStation\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_criminalDetails\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_incidentLocation\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_victimDetails\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_officerDetails\",\"type\":\"string\"}],\"name\":\"createFIR\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"firs\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"FIRID\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"policeStation\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"criminalDetails\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"incidentLocation\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"victimDetails\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"officerDetails\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getFIR\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"FIRID\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"policeStation\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"criminalDetails\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"incidentLocation\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"victimDetails\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"officerDetails\",\"type\":\"string\"}],\"internalType\":\"struct FIR.FIRDetails\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTotalFIRs\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/FIR.sol\":\"FIR\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/FIR.sol\":{\"keccak256\":\"0x2c8c2420185ad19972c337b019ea03ef39d0348f2dc12f821ada96274c1fd7a9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8a454480399744f0b01aa53738d63a81e1963c5a2c635b6074d3e3393ddebea2\",\"dweb:/ipfs/QmW5b7gV2Ye6rmSmuiKVhNV5kiXtRQfa9RVEuKvzq8crGi\"]}},\"version\":1}",
@@ -6779,10 +6782,17 @@
       "links": {},
       "address": "0x780b2ff33841A7f800978C9869A35ea2a45f7613",
       "transactionHash": "0x3754b204dc3c3a28ad3a071aaa4626a4189bd2225c70a3be9a6a4643558c1f90"
+    },
+    "1738772038367": {
+      "events": {},
+      "links": {},
+      "address": "0x70D5192C4E9bA57DAD26d3ffB9106256717c6F47",
+      "transactionHash": "0xa5acf31083c6f38c87856d40f2c3b906c25fc3c40327cc4f58e05670d8f29ae3"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-02-05T11:40:33.877Z",
+  "updatedAt": "2025-02-05T16:15:08.823Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},

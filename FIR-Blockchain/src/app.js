@@ -2,45 +2,41 @@ let firContract;
 window.addEventListener('load', async () => {
     if (window.ethereum) {
         const web3 = new Web3(window.ethereum);
-        
-        try {
-            await ethereum.request({ method: 'eth_requestAccounts' });
-            alert('MetaMask is connected!');
-        } catch (error) {
-            console.error("User denied account access:", error);
-            alert("Please connect your MetaMask wallet to proceed.");
-        }
+
+        document.getElementById("connectWalletButton").addEventListener("click", async () => {
+            try {
+                await ethereum.request({ method: 'eth_requestAccounts' });
+                alert('MetaMask is connected!');
+            } catch (error) {
+                console.error("User denied account access:", error);
+                alert("Please connect your MetaMask wallet to proceed.");
+            }
+        });
 
         const networkId = await web3.eth.net.getId();
         console.log('Network ID:', networkId);
 
         // Replace with your contract address
-        const contractAddress = '0x780b2ff33841A7f800978C9869A35ea2a45f7613';
+        const contractAddress = '0x70D5192C4E9bA57DAD26d3ffB9106256717c6F47';
 
         // ABI of the contract
-        const abi = [ 
+        const abi = [
             {
                 "inputs": [
-                    { "internalType": "uint256", "name": "index", "type": "uint256" }
+                    { "internalType": "uint256", "name": "", "type": "uint256" }
                 ],
-                "name": "getFIR",
+                "name": "firs",
                 "outputs": [
-                    {
-                        "components": [
-                            { "internalType": "string", "name": "FIRID", "type": "string" },
-                            { "internalType": "string", "name": "policeStation", "type": "string" },
-                            { "internalType": "string", "name": "criminalDetails", "type": "string" },
-                            { "internalType": "string", "name": "incidentLocation", "type": "string" },
-                            { "internalType": "string", "name": "victimDetails", "type": "string" },
-                            { "internalType": "string", "name": "officerDetails", "type": "string" }
-                        ],
-                        "internalType": "struct FIR.FIRDetails",
-                        "name": "",
-                        "type": "tuple"
-                    }
+                    { "internalType": "string", "name": "FIRID", "type": "string" },
+                    { "internalType": "string", "name": "policeStation", "type": "string" },
+                    { "internalType": "string", "name": "criminalDetails", "type": "string" },
+                    { "internalType": "string", "name": "incidentLocation", "type": "string" },
+                    { "internalType": "string", "name": "victimDetails", "type": "string" },
+                    { "internalType": "string", "name": "officerDetails", "type": "string" }
                 ],
                 "stateMutability": "view",
-                "type": "function"
+                "type": "function",
+                "constant": true
             },
             {
                 "inputs": [
@@ -55,13 +51,6 @@ window.addEventListener('load', async () => {
                 "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "getTotalFIRs",
-                "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-                "stateMutability": "view",
-                "type": "function"
             }
         ];
 
@@ -75,17 +64,26 @@ window.addEventListener('load', async () => {
             const firID = document.getElementById('firID').value;
             const policeStation = document.getElementById('policeStation').value;
             const criminalDetails = document.getElementById('criminalDetails').value;
-            const incidentLocation = document.getElementById('incidentLocation').value; // Fixed variable name
+            const incidentLocation = document.getElementById('incidentLocation').value;
             const victimDetails = document.getElementById('victimDetails').value;
             const officerDetails = document.getElementById('officerDetails').value;
 
-            const accounts = await web3.eth.getAccounts();
-
             try {
-                await firContract.methods.createFIR(firID, policeStation, criminalDetails, incidentLocation, victimDetails, officerDetails)
-                    .send({ from: accounts[0] });
+                const accounts = await web3.eth.getAccounts();
+                if (accounts.length === 0) {
+                    alert("Please connect your MetaMask wallet first.");
+                    return;
+                }
 
-                alert('FIR submitted successfully!');
+                await firContract.methods.createFIR(firID, policeStation, criminalDetails, incidentLocation, victimDetails, officerDetails)
+                    .send({ from: accounts[0], gas: 3000000 });
+
+                // Store FIR location **only after transaction is successful**
+                let firLocations = JSON.parse(localStorage.getItem("firLocations")) || [];
+                firLocations.push({ firID, incidentLocation });
+                localStorage.setItem("firLocations", JSON.stringify(firLocations));
+
+                alert("FIR submitted successfully! Location will appear on the map.");
 
                 // Redirect to map.html with location as query parameter
                 window.location.href = `map.html?location=${encodeURIComponent(incidentLocation)}`;
