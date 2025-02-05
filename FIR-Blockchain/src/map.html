@@ -35,11 +35,16 @@
 <body>
 
     <nav>
-        <button onclick="window.location.href='index.html'">File FIR</button>
+        <button onclick="window.location.href='index.html'">FIR Form</button>
+        <button onclick="window.location.href='Officer.html'">Login</button>
+        <div id="loginStatus"></div>
     </nav>
     
     <h1>FIR Incident Locations</h1>
     <div id="map"></div>
+    <div id="createFIRButton" style="display:none;">
+        <button onclick="window.location.href='index.html'">Create FIR</button>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
@@ -144,6 +149,7 @@
 
         initBlockchain();
     </script>
+     <script src="map.js"></script>
 
 </body>
 </html>

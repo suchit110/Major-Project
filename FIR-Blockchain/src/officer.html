@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Officer Login / Register</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        p {
+            text-align: center;
+            font-size: 14px;
+        }
+
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 15px;
+            }
+            input, button {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+
+        /* Hidden Register Form by default */
+        #registerForm {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Officer Login / Register</h2>
+
+        <!-- Login Form -->
+        <form id="loginForm">
+            <label for="loginUsername">Username:</label>
+            <input type="text" id="loginUsername" required>
+
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" required>
+
+            <button type="submit">Login</button>
+            <p>Don't have an account? <a href="#" id="showRegisterForm">Register</a></p>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm">
+            <label for="registerUsername">Username:</label>
+            <input type="text" id="registerUsername" required>
+
+            <label for="registerEmail">Email:</label>
+            <input type="email" id="registerEmail" required>
+
+            <label for="registerPassword">Password:</label>
+            <input type="password" id="registerPassword" required>
+
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" required>
+
+            <button type="submit">Register</button>
+            <p>Already have an account? <a href="#" id="showLoginForm">Login</a></p>
+        </form>
+
+        <!-- Message Display -->
+        <div id="message"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const showRegisterForm = document.getElementById('showRegisterForm');
+            const showLoginForm = document.getElementById('showLoginForm');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const messageDiv = document.getElementById('message');
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+
+            // Show the Register form when 'Register' is clicked
+            showRegisterForm.addEventListener('click', function(e) {
+                e.preventDefault();
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            });
+
+            // Show the Login form when 'Login' is clicked
+            showLoginForm.addEventListener('click', function(e) {
+                e.preventDefault();
+                registerForm.style.display = 'none';
+                loginForm.style.display = 'block';
+            });
+
+            // Handle Registration
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('registerUsername').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (password !== confirmPassword) {
+                    messageDiv.textContent = "Passwords do not match.";
+                    return;
+                }
+
+                if (users.some(user => user.username === username)) {
+                    messageDiv.textContent = "Username already exists.";
+                    return;
+                }
+
+                users.push({ username, email, password });
+                localStorage.setItem('users', JSON.stringify(users));
+                messageDiv.textContent = "Registration successful! You can now login.";
+                registerForm.style.display = 'none';
+                loginForm.style.display = 'block';
+            });
+
+            // Handle Login
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('loginUsername').value;
+                const password = document.getElementById('loginPassword').value;
+
+                const user = users.find(u => u.username === username && u.password === password);
+                
+                if (user) {
+                    messageDiv.textContent = "Login successful!";
+                    window.location.href = 'map.html'; // Redirect to dashboard/map
+                } else {
+                    messageDiv.textContent = "Invalid username or password.";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
