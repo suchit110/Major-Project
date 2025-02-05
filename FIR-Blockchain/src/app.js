@@ -25,157 +25,154 @@ window.addEventListener('load', async () => {
         console.log('Network ID:', networkId);
 
         // Replace with your contract ABI and address
-        const contractAddress = '0xf3ee4a032e844435B3877E09CF713a28B367214e'; // Replace with your contract address
+        const contractAddress = '0x469B57Ec9EAc84F32293b68C94De7DAb839FB2DA'; // Replace with your contract address
 
         const abi = [  {
-            "inputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "name": "firs",
-            "outputs": [
-              {
-                "internalType": "string",
-                "name": "FIRID",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "policeStation",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "criminalDetails",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "incidentDetails",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "victimDetails",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "officerDetails",
-                "type": "string"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "constant": true
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "string",
-                "name": "_FIRID",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "_policeStation",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "_criminalDetails",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "_incidentDetails",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "_victimDetails",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "_officerDetails",
-                "type": "string"
-              }
-            ],
-            "name": "createFIR",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "uint256",
-                "name": "index",
-                "type": "uint256"
-              }
-            ],
-            "name": "getFIR",
-            "outputs": [
-              {
-                "components": [
-                  {
-                    "internalType": "string",
-                    "name": "FIRID",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "string",
-                    "name": "policeStation",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "string",
-                    "name": "criminalDetails",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "string",
-                    "name": "incidentDetails",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "string",
-                    "name": "victimDetails",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "string",
-                    "name": "officerDetails",
-                    "type": "string"
-                  }
-                ],
-                "internalType": "struct FIR.FIRDetails",
-                "name": "",
-                "type": "tuple"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "constant": true
-          },
-          {
-            "inputs": [],
-            "name": "getTotalFIRs",
-            "outputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "constant": true
-          } ];
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "name": "firs",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "FIRID",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "policeStation",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "criminalDetails",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "incidentDetails",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "victimDetails",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "officerDetails",
+              "type": "string"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "_FIRID",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "_policeStation",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "_criminalDetails",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "_incidentDetails",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "_victimDetails",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "_officerDetails",
+              "type": "string"
+            }
+          ],
+          "name": "createFIR",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+            }
+          ],
+          "name": "getFIR",
+          "outputs": [
+            {
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "FIRID",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "policeStation",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "criminalDetails",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "incidentDetails",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "victimDetails",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "officerDetails",
+                  "type": "string"
+                }
+              ],
+              "internalType": "struct FIR.FIRDetails",
+              "name": "",
+              "type": "tuple"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "getTotalFIRs",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        } ];
 
         const firContract = new web3.eth.Contract(abi, contractAddress);
 

@@ -6767,10 +6767,16 @@
       "links": {},
       "address": "0xf3ee4a032e844435B3877E09CF713a28B367214e",
       "transactionHash": "0x19397cf41cc114c640894513a8c177f9c57dcfa962b0ecfa2f3e647122c71954"
+    },
+    "1738732906797": {
+      "events": {},
+      "links": {},
+      "address": "0x469B57Ec9EAc84F32293b68C94De7DAb839FB2DA",
+      "transactionHash": "0xb2d7bbb35239c257d425a36333139e23e649d30e3af9605edd1c97a3cb68f334"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-02-04T17:02:03.985Z",
+  "updatedAt": "2025-02-05T07:47:10.123Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
