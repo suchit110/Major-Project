@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FIR Form</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
 </head>
 <body>
     <div class="form-container">
@@ -21,8 +24,8 @@
             <label for="criminalDetails">Criminal Details:</label>
             <input type="text" id="criminalDetails" required>
 
-            <label for="incidentDetails">Incident Details:</label>
-            <input type="text" id="incidentDetails" required>
+            <label for="incidentLocation">Incident Location:</label>
+    <input type="text" id="incidentLocation" name="incidentLocation" required>
 
             <label for="victimDetails">Victim Details:</label>
             <input type="text" id="victimDetails" required>
@@ -32,21 +35,17 @@
 
             <button type="submit">Submit FIR</button>
         </form>
-        <div id="firSelection" style="display: none;">
-            <label for="firIndex">Select FIR Index:</label>
-            <select id="firIndex"></select>
-            <button id="printFIRButton">Print Selected FIR</button>
-        </div>
+       
 
-        <!-- Containers for displaying FIRs and printable content -->
-        <div id="firListContainer"></div>
-        <div id="printableFIR" style="display: none;"></div>
-    </div>
+       
 
         
         
     </div>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.6.1/dist/web3.min.js"></script>
     <script src="app.js"></script>
+    <!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
 </body>
 </html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIR Location Map</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            width: 100%;
+            height: 600px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>FIR Incident Location</h1>
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        function getLocationFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('location');
+        }
+
+        async function getCoordinates(location) {
+            const apiKey = '32596d57fca24156ba101b641438eed4'; // Replace with a real API key from OpenCage or OpenStreetMap Nominatim
+            const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.results && data.results.length > 0) {
+                    return data.results[0].geometry;
+                } else {
+                    console.error("No results found for the location");
+                    return null;
+                }
+            } catch (error) {
+                console.error("Error fetching coordinates:", error);
+                return null;
+            }
+        }
+
+        async function initMap() {
+            const location = getLocationFromURL();
+            console.log("Location from URL:", location);
+
+            if (location) {
+                const coordinates = await getCoordinates(location);
+                console.log("Coordinates:", coordinates);
+
+                if (coordinates) {
+                    const map = L.map('map').setView([coordinates.lat, coordinates.lng], 13);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(map);
+
+                    L.marker([coordinates.lat, coordinates.lng], {
+                        icon: L.icon({
+                            iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg', // Red dot icon
+                            iconSize: [20, 20],
+                            iconAnchor: [10, 10],
+                        })
+                    }).addTo(map).bindPopup('Incident Location');
+                } else {
+                    alert('Could not find the location. Please try again.');
+                }
+            } else {
+                alert('No location provided.');
+            }
+        }
+
+        initMap();
+    </script>
+
+</body>
+</html>

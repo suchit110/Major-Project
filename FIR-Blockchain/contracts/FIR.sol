@@ -6,7 +6,7 @@ contract FIR {
         string FIRID;
         string policeStation;
         string criminalDetails;
-        string incidentDetails;
+        string incidentLocation;
         string victimDetails;
         string officerDetails;
     }
@@ -17,11 +17,11 @@ contract FIR {
         string memory _FIRID,
         string memory _policeStation,
         string memory _criminalDetails,
-        string memory _incidentDetails,
+        string memory _incidentLocation,
         string memory _victimDetails,
         string memory _officerDetails
     ) public {
-        firs.push(FIRDetails(_FIRID, _policeStation, _criminalDetails, _incidentDetails, _victimDetails, _officerDetails));
+        firs.push(FIRDetails(_FIRID, _policeStation, _criminalDetails, _incidentLocation, _victimDetails, _officerDetails));
     }
 
     function getFIR(uint index) public view returns (FIRDetails memory) {
