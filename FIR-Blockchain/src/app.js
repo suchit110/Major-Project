@@ -242,4 +242,29 @@ async function displayFIRs() {
 document.getElementById('viewFIRs').addEventListener('click', displayFIRs);
 
 // Modified displayFIRs function to correctly display FIRs
+// Add this code to your app.js
 
+// Function to populate printable content
+function preparePrintableFIR(firData) {
+    const printableFIR = document.getElementById('printableFIR');
+    printableFIR.innerHTML = `
+      <div class="fir-details">
+        <h2>FIR Report</h2>
+        <p><strong>FIR ID:</strong> ${firData.FIRID}</p>
+        <p><strong>Police Station:</strong> ${firData.policeStation}</p>
+        <p><strong>Criminal Details:</strong> ${firData.criminalDetails}</p>
+        <p><strong>Incident Details:</strong> ${firData.incidentDetails}</p>
+        <p><strong>Victim Details:</strong> ${firData.victimDetails}</p>
+        <p><strong>Officer Details:</strong> ${firData.officerDetails}</p>
+        <p><em>FIR stored on Ethereum blockchain at address: ${contractAddress}</em></p>
+      </div>
+    `;
+  }
+  
+  // Print button handler
+  document.getElementById('printFIRButton').addEventListener('click', async () => {
+    const firIndex = 0; // Replace with logic to select the FIR index (e.g., latest FIR)
+    const firData = await contract.methods.getFIR(firIndex).call();
+    preparePrintableFIR(firData);
+    window.print(); // Trigger browser print dialog
+  });

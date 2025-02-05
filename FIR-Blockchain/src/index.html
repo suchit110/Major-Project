@@ -32,8 +32,16 @@
 
             <button type="submit">Submit FIR</button>
         </form>
-        <button id="viewFIRs">View Submitted FIRs</button>
-        <div id="firListContainer"></div>  <!-- Added for displaying FIRs -->
+        <div id="firSelection" style="display: none;">
+            <label for="firIndex">Select FIR Index:</label>
+            <select id="firIndex"></select>
+            <button id="printFIRButton">Print Selected FIR</button>
+        </div>
+
+        <!-- Containers for displaying FIRs and printable content -->
+        <div id="firListContainer"></div>
+        <div id="printableFIR" style="display: none;"></div>
+    </div>
 
         
         

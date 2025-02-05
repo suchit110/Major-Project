@@ -13,7 +13,7 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    width: 350px;
 }
 
 form {
@@ -45,3 +45,68 @@ button {
 button:hover {
     background-color: #45a049;
 }
+/* Add these styles to your CSS file */
+@media print {
+    /* Hide non-essential elements */
+    body * {
+      visibility: hidden;
+    }
+    
+    /* Show only the printable FIR content */
+    #printableFIR, #printableFIR * {
+      visibility: visible;
+    }
+  
+    /* Position the printable content at the top-left */
+    #printableFIR {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      margin: 0;
+      padding: 20px;
+    }
+  
+    /* Style for FIR details */
+    .fir-details {
+      font-family: Arial, sans-serif;
+      border: 1px solid #000;
+      padding: 15px;
+      margin: 10px 0;
+      page-break-inside: avoid; /* Prevent splitting across pages */
+    }
+  
+    /* Hide the print button during printing */
+    #printFIRButton {
+      display: none;
+    }
+  }
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+  
+    #printableFIR, #printableFIR * {
+      visibility: visible;
+    }
+  
+    #printableFIR {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+  
+    .printable-fir {
+      border: 2px solid #000;
+      padding: 15px;
+      margin: 10px 0;
+    }
+  
+    /* Hide buttons during printing */
+    #printFIRButton, #viewFIRs, #connectWalletButton {
+      display: none !important;
+    }
+  }
