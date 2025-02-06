@@ -16,51 +16,162 @@ window.addEventListener('load', async () => {
         const networkId = await web3.eth.net.getId();
         console.log('Network ID:', networkId);
 
-        // Replace with your contract address
-        const contractAddress = '0x70D5192C4E9bA57DAD26d3ffB9106256717c6F47';
-
-        // ABI of the contract
-        const abi = [
-            {
-                "inputs": [
-                    { "internalType": "uint256", "name": "", "type": "uint256" }
+        const contractAddress = '0x12BFD39Dac03d9B46eb8fd93d7443c1d2DC6ebea';
+        const abi = [ {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "name": "firs",
+            "outputs": [
+              {
+                "internalType": "string",
+                "name": "FIRID",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "policeStation",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "criminalDetails",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "incidentLocation",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "victimDetails",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "officerDetails",
+                "type": "string"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function",
+            "constant": true
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "string",
+                "name": "_FIRID",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "_policeStation",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "_criminalDetails",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "_incidentLocation",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "_victimDetails",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "_officerDetails",
+                "type": "string"
+              }
+            ],
+            "name": "createFIR",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+              }
+            ],
+            "name": "getFIR",
+            "outputs": [
+              {
+                "components": [
+                  {
+                    "internalType": "string",
+                    "name": "FIRID",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "policeStation",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "criminalDetails",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "incidentLocation",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "victimDetails",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "officerDetails",
+                    "type": "string"
+                  }
                 ],
-                "name": "firs",
-                "outputs": [
-                    { "internalType": "string", "name": "FIRID", "type": "string" },
-                    { "internalType": "string", "name": "policeStation", "type": "string" },
-                    { "internalType": "string", "name": "criminalDetails", "type": "string" },
-                    { "internalType": "string", "name": "incidentLocation", "type": "string" },
-                    { "internalType": "string", "name": "victimDetails", "type": "string" },
-                    { "internalType": "string", "name": "officerDetails", "type": "string" }
-                ],
-                "stateMutability": "view",
-                "type": "function",
-                "constant": true
-            },
-            {
-                "inputs": [
-                    { "internalType": "string", "name": "_FIRID", "type": "string" },
-                    { "internalType": "string", "name": "_policeStation", "type": "string" },
-                    { "internalType": "string", "name": "_criminalDetails", "type": "string" },
-                    { "internalType": "string", "name": "_incidentLocation", "type": "string" },
-                    { "internalType": "string", "name": "_victimDetails", "type": "string" },
-                    { "internalType": "string", "name": "_officerDetails", "type": "string" }
-                ],
-                "name": "createFIR",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            }
-        ];
+                "internalType": "struct FIR.FIRDetails",
+                "name": "",
+                "type": "tuple"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function",
+            "constant": true
+          },
+          {
+            "inputs": [],
+            "name": "getTotalFIRs",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function",
+            "constant": true
+          } ];
 
         firContract = new web3.eth.Contract(abi, contractAddress);
 
-        // Handle FIR Form Submission
         document.getElementById('firForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Get input values
             const firID = document.getElementById('firID').value;
             const policeStation = document.getElementById('policeStation').value;
             const criminalDetails = document.getElementById('criminalDetails').value;
@@ -78,7 +189,7 @@ window.addEventListener('load', async () => {
                 await firContract.methods.createFIR(firID, policeStation, criminalDetails, incidentLocation, victimDetails, officerDetails)
                     .send({ from: accounts[0], gas: 3000000 });
 
-                // Store FIR location **only after transaction is successful**
+                // Store FIR location in localStorage
                 let firLocations = JSON.parse(localStorage.getItem("firLocations")) || [];
                 firLocations.push({ firID, incidentLocation });
                 localStorage.setItem("firLocations", JSON.stringify(firLocations));
@@ -86,7 +197,7 @@ window.addEventListener('load', async () => {
                 alert("FIR submitted successfully! Location will appear on the map.");
 
                 // Redirect to map.html with location as query parameter
-                window.location.href = `map.html?location=${encodeURIComponent(incidentLocation)}`;
+                window.location.href = `map.html`;
 
             } catch (error) {
                 console.error("Error submitting FIR:", error);

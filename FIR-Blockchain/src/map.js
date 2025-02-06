@@ -13,8 +13,156 @@ window.addEventListener('load', async () => {
             document.getElementById("loginStatus").innerText = "Not Logged in";
         }
 
-        const contractAddress = '0x70D5192C4E9bA57DAD26d3ffB9106256717c6F47';
-        const abi = [ /* Same ABI as before */ ];
+        const contractAddress = '0x12BFD39Dac03d9B46eb8fd93d7443c1d2DC6ebea';
+        const abi = [ {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "name": "firs",
+            "outputs": [
+              {
+                "internalType": "string",
+                "name": "FIRID",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "policeStation",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "criminalDetails",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "incidentLocation",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "victimDetails",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "officerDetails",
+                "type": "string"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function",
+            "constant": true
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "string",
+                "name": "_FIRID",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "_policeStation",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "_criminalDetails",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "_incidentLocation",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "_victimDetails",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "_officerDetails",
+                "type": "string"
+              }
+            ],
+            "name": "createFIR",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+              }
+            ],
+            "name": "getFIR",
+            "outputs": [
+              {
+                "components": [
+                  {
+                    "internalType": "string",
+                    "name": "FIRID",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "policeStation",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "criminalDetails",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "incidentLocation",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "victimDetails",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "officerDetails",
+                    "type": "string"
+                  }
+                ],
+                "internalType": "struct FIR.FIRDetails",
+                "name": "",
+                "type": "tuple"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function",
+            "constant": true
+          },
+          {
+            "inputs": [],
+            "name": "getTotalFIRs",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function",
+            "constant": true
+          } ];
         firContract = new web3.eth.Contract(abi, contractAddress);
 
         loadMapWithFIRs();
@@ -40,7 +188,7 @@ async function loadMapWithFIRs() {
 }
 
 async function getCoordinates(location) {
-    const apiKey = 'YOUR_API_KEY'; // Use a valid API key from a geocoding service like OpenCage or Google Maps
+    const apiKey = '32596d57fca24156ba101b641438eed4'; // Use a valid API key from a geocoding service like OpenCage or Google Maps
     const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=${apiKey}`;
     const response = await fetch(url);
     const data = await response.json();

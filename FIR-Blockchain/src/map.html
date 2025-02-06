@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FIR Locations Dashboard</title>
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/web3@latest/dist/web3.min.js"></script>
 
@@ -33,78 +32,24 @@
     </style>
 </head>
 <body>
-
     <nav>
         <button onclick="window.location.href='index.html'">FIR Form</button>
         <button onclick="window.location.href='Officer.html'">Login</button>
         <div id="loginStatus"></div>
     </nav>
-    
+
     <h1>FIR Incident Locations</h1>
     <div id="map"></div>
-    <div id="createFIRButton" style="display:none;">
-        <button onclick="window.location.href='index.html'">Create FIR</button>
-    </div>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
-        let firContract;
-
-        async function initBlockchain() {
-            if (window.ethereum) {
-                const web3 = new Web3(window.ethereum);
-                await ethereum.request({ method: 'eth_requestAccounts' });
-
-                const contractAddress = '0x70D5192C4E9bA57DAD26d3ffB9106256717c6F47';
-                const abi = [ 
-                    {
-                        "inputs": [
-                            { "internalType": "uint256", "name": "index", "type": "uint256" }
-                        ],
-                        "name": "getFIR",
-                        "outputs": [
-                            {
-                                "components": [
-                                    { "internalType": "string", "name": "FIRID", "type": "string" },
-                                    { "internalType": "string", "name": "policeStation", "type": "string" },
-                                    { "internalType": "string", "name": "criminalDetails", "type": "string" },
-                                    { "internalType": "string", "name": "incidentLocation", "type": "string" },
-                                    { "internalType": "string", "name": "victimDetails", "type": "string" },
-                                    { "internalType": "string", "name": "officerDetails", "type": "string" }
-                                ],
-                                "internalType": "struct FIR.FIRDetails",
-                                "name": "",
-                                "type": "tuple"
-                            }
-                        ],
-                        "stateMutability": "view",
-                        "type": "function"
-                    },
-                    {
-                        "inputs": [],
-                        "name": "getTotalFIRs",
-                        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-                        "stateMutability": "view",
-                        "type": "function"
-                    }
-                ];
-
-                firContract = new web3.eth.Contract(abi, contractAddress);
-                loadMapWithFIRs();
-            } else {
-                alert("Please install MetaMask.");
-            }
-        }
-
-        // Convert location name to latitude/longitude
         async function getCoordinates(location) {
-            const apiKey = '32596d57fca24156ba101b641438eed4'; // Replace with your OpenCage API key
+            const apiKey = '32596d57fca24156ba101b641438eed4'; // OpenCage API key
             const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=${apiKey}`;
             
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                console.log("Geocode response:", data); // Debugging log
 
                 if (data.results && data.results.length > 0) {
                     return data.results[0].geometry;
@@ -118,38 +63,34 @@
             }
         }
 
-        async function loadMapWithFIRs() {
-            const totalFIRs = await firContract.methods.getTotalFIRs().call();
-            console.log("Total FIRs:", totalFIRs);
+        async function loadMap() {
+            const map = L.map('map').setView([20.5937, 78.9629], 5); // Default center of India
 
-            const map = L.map('map').setView([20.5937, 78.9629], 5); // Default India center
-
-            // Add OpenStreetMap tiles
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(map);
 
-            for (let i = 0; i < totalFIRs; i++) {
-                const fir = await firContract.methods.getFIR(i).call();
-                console.log(`FIR ${i} location:`, fir.incidentLocation);
-
-                const coordinates = await getCoordinates(fir.incidentLocation);
+            // Get FIR locations from localStorage
+            const firLocations = JSON.parse(localStorage.getItem('firLocations')) || [];
+            
+            // For each FIR location, plot a red dot
+            for (let i = 0; i < firLocations.length; i++) {
+                const location = firLocations[i].incidentLocation;
+                const coordinates = await getCoordinates(location);
+                
                 if (coordinates) {
                     const marker = L.marker([coordinates.lat, coordinates.lng], {
                         icon: L.divIcon({
                             className: 'custom-marker',
-                            html: '<div style="background:red; width:10px; height:10px; border-radius:50%;"></div>',
-                            iconSize: [10, 10]
+                            html: '<div style="background:red; width:12px; height:12px; border-radius:50%;"></div>',
+                            iconSize: [12, 12]
                         })
-                    }).addTo(map).bindPopup(`<b>FIR ID:</b> ${fir.FIRID}<br><b>Location:</b> ${fir.incidentLocation}`);
-                    console.log(`Added marker at: ${coordinates.lat}, ${coordinates.lng}`);
+                    }).addTo(map).bindPopup(`<b>Location:</b> ${location}`);
                 }
             }
         }
 
-        initBlockchain();
+        loadMap();
     </script>
-     <script src="map.js"></script>
-
 </body>
 </html>
