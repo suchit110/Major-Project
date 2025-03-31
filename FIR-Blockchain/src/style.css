@@ -1,19 +1,67 @@
+/* Basic styling for the FIR form */
 body {
     font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
-    background-color: #f4f4f9;
+    min-height: 100vh;
 }
 
 .form-container {
-    background: white;
-    padding: 20px;
+    background-color: white;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 350px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 100%;
+    max-width: 600px;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+.button-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#loginButton {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    flex: 1;
+    transition: background-color 0.3s;
+}
+
+#loginButton:hover {
+    background-color: #2980b9;
+}
+
+#connectWalletButton {
+    background-color: #f39c12;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 250px;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+#connectWalletButton:hover {
+    background-color: #e67e22;
 }
 
 form {
@@ -22,91 +70,147 @@ form {
 }
 
 label {
-    margin-top: 10px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #555;
 }
 
 input {
-    padding: 8px;
-    margin: 5px 0;
+    padding: 10px;
+    margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    font-size: 16px;
 }
 
-button {
-    margin-top: 10px;
-    padding: 10px;
+input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+button[type="submit"] {
     background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 4px;
+    padding: 12px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Styling for read-only fields */
+input[readonly] {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    color: #666;
+    cursor: not-allowed;
+}
+
+input[readonly]:focus {
+    box-shadow: none;
+    border-color: #ddd;
+}
+
+/* Add some indicators for auto-generated/filled fields */
+#FIRID[readonly]::after,
+#officerDetails[readonly]::after {
+    content: "Auto-generated";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #999;
+    font-style: italic;
+}
+
+#officerDetails[readonly]::after {
+    content: "Auto-filled";
+}
+
+/* Style for field containers to support positioning */
+.field-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+/* Add a specific class for autofilled/generated fields */
+.auto-field {
+    position: relative;
+}
+
+.auto-field input {
+    padding-right: 110px; /* Make room for the label */
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+.auto-field::after {
+    content: "Auto-generated";
+    position: absolute;
+    right: 10px;
+    top: 38px; /* Position after the label */
+    font-size: 11px;
+    color: #999;
+    font-style: italic;
+}
+
+.auto-field.officer::after {
+    content: "Auto-filled";
+}
+
+/* Animation for highlighting elements */
+@keyframes highlight {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+    }
+}
+
+/* Login status container */
+#loginStatusContainer {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+#loginStatusContainer.officer {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+#loginStatusContainer.not-logged-in {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+#logoutButton {
+    margin-left: 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    border-radius: 3px;
     cursor: pointer;
 }
 
-button:hover {
-    background-color: #45a049;
+#logoutButton:hover {
+    background-color: #bd2130;
 }
-/* Add these styles to your CSS file */
-@media print {
-    /* Hide non-essential elements */
-    body * {
-      visibility: hidden;
-    }
-    
-    /* Show only the printable FIR content */
-    #printableFIR, #printableFIR * {
-      visibility: visible;
-    }
-  
-    /* Position the printable content at the top-left */
-    #printableFIR {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      margin: 0;
-      padding: 20px;
-    }
-  
-    /* Style for FIR details */
-    .fir-details {
-      font-family: Arial, sans-serif;
-      border: 1px solid #000;
-      padding: 15px;
-      margin: 10px 0;
-      page-break-inside: avoid; /* Prevent splitting across pages */
-    }
-  
-    /* Hide the print button during printing */
-    #printFIRButton {
-      display: none;
-    }
-  }
-  @media print {
-    body * {
-      visibility: hidden;
-    }
-  
-    #printableFIR, #printableFIR * {
-      visibility: visible;
-    }
-  
-    #printableFIR {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-    }
-  
-    .printable-fir {
-      border: 2px solid #000;
-      padding: 15px;
-      margin: 10px 0;
-    }
-  
-    /* Hide buttons during printing */
-    #printFIRButton, #viewFIRs, #connectWalletButton {
-      display: none !important;
-    }
-  }

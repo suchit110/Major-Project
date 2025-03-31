@@ -7,30 +7,136 @@
     <link rel="stylesheet" href="style.css">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        nav {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        nav button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        nav button:hover {
+            background-color: #45a049;
+        }
+        #loginStatus {
+            padding: 0 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logout-btn {
+            background-color: #f44336 !important;
+        }
+        .logout-btn:hover {
+            background-color: #d32f2f !important;
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .auto-field input {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        .field-container {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .button-row {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
+    <nav>
+        <div class="nav-buttons">
+            <button onclick="window.location.href='map.html'">Home</button>
+            <button id="loginButton" onclick="window.location.href='officer.html'">Login</button>
+            <button id="logoutButton" class="logout-btn" style="display:none" onclick="logout()">Logout</button>
+        </div>
+        <div id="loginStatus">Not logged in</div>
+    </nav>
+
     <div class="form-container">
         <h2>File FIR</h2>
-        <button id="connectWalletButton">Connect Wallet</button>
+        <div class="button-row">
+            <button id="connectWalletButton">Connect Wallet</button>
+        </div>
 
-        <form id="firForm">
-            <label for="firID">FIR ID:</label>
-            <input type="text" id="firID" required>
+        <form id="firForm" onsubmit="return submitFIR(event)">
+            <div class="field-container auto-field">
+                <label for="FIRID">FIR ID:</label>
+                <input type="text" id="FIRID" placeholder="Auto-generated" readonly required>
+            </div>
 
-            <label for="policeStation">Police Station:</label>
-            <input type="text" id="policeStation" required>
+            <div class="field-container">
+                <label for="policeStation">Police Station:</label>
+                <input type="text" id="policeStation" readonly required>
+            </div>
 
-            <label for="criminalDetails">Criminal Details:</label>
-            <input type="text" id="criminalDetails" required>
+            <div class="field-container">
+                <label for="criminalDetails">Criminal Details:</label>
+                <input type="text" id="criminalDetails" required>
+            </div>
 
-            <label for="incidentLocation">Incident Location:</label>
-            <input type="text" id="incidentLocation" name="incidentLocation" required>
+            <div class="field-container">
+                <label for="incidentLocation">Incident Location:</label>
+                <input type="text" id="incidentLocation" name="incidentLocation" required>
+            </div>
 
-            <label for="victimDetails">Victim Details:</label>
-            <input type="text" id="victimDetails" required>
+            <div class="field-container">
+                <label for="victimDetails">Victim Details:</label>
+                <input type="text" id="victimDetails" required>
+            </div>
 
-            <label for="officerDetails">Officer Details:</label>
-            <input type="text" id="officerDetails" required>
+            <div class="field-container auto-field officer">
+                <label for="officerDetails">Officer Details:</label>
+                <input type="text" id="officerDetails" placeholder="Auto-filled" readonly required>
+            </div>
 
             <button type="submit">Submit FIR</button>
         </form>
@@ -40,5 +146,51 @@
     <script src="app.js"></script>
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Check login status when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+            const isOfficer = localStorage.getItem("isOfficerLoggedIn") === "true";
+            const username = localStorage.getItem("username");
+            const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+
+            if (isLoggedIn && isOfficer) {
+                document.getElementById("loginButton").style.display = "none";
+                document.getElementById("logoutButton").style.display = "inline-block";
+                document.getElementById("loginStatus").innerHTML = `
+                    <span class="status-indicator"></span> ${userInfo.username || username}
+                `;
+                // Auto-fill officer details
+                populateOfficerDetails();
+            } else {
+                // Redirect to login if not logged in as officer
+                alert("You must be logged in as an officer to file FIRs.");
+                window.location.href = 'officer.html';
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("isOfficerLoggedIn");
+            localStorage.removeItem("userRole");
+            localStorage.removeItem("username");
+            localStorage.removeItem("userInfo");
+            window.location.href = 'officer.html';
+        }
+
+        // Function to auto-fill officer details
+        function populateOfficerDetails() {
+            try {
+                const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+                if (userInfo) {
+                    document.getElementById("officerDetails").value = 
+                        `${userInfo.username} (Badge: ${userInfo.badgeNumber}, Station: ${userInfo.policeStation})`;
+                    document.getElementById("policeStation").value = userInfo.policeStation;
+                }
+            } catch (error) {
+                console.error("Error populating officer details:", error);
+            }
+        }
+    </script>
 </body>
 </html>

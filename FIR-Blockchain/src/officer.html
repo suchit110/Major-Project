@@ -80,6 +80,8 @@
 </head>
 <body>
     <div class="form-container">
+        <h2>FIR System</h2>
+        
         <div class="switch-buttons">
             <button id="switchToOfficer" class="active">Officer</button>
             <button id="switchToUser">User</button>
@@ -91,15 +93,15 @@
             <input type="password" id="officerLoginPassword" placeholder="Password" required>
             <button type="submit">Login</button>
             <p>Don't have an account? <a href="#" id="showOfficerRegisterForm">Register</a></p>
+            <div class="error" id="officerLoginError"></div>
         </form>
 
         <form id="officerRegisterForm" class="hidden">
             <h2>Officer Register</h2>
             <input type="text" id="officerRegisterUsername" placeholder="Username" required>
-            <input type="email" id="officerRegisterEmail" placeholder="Email" required>
             <input type="text" id="officerBadgeNumber" placeholder="Badge Number" required>
+            <input type="text" id="officerPoliceStation" placeholder="Police Station" required>
             <input type="password" id="officerRegisterPassword" placeholder="Password" required>
-            <input type="password" id="officerConfirmPassword" placeholder="Confirm Password" required>
             <button type="submit">Register</button>
             <p>Already have an account? <a href="#" id="showOfficerLoginForm">Login</a></p>
             <div class="error" id="officerError"></div>
@@ -111,13 +113,12 @@
             <input type="password" id="userLoginPassword" placeholder="Password" required>
             <button type="submit">Login</button>
             <p>Don't have an account? <a href="#" id="showUserRegisterForm">Register</a></p>
+            <div class="error" id="userLoginError"></div>
         </form>
 
         <form id="userRegisterForm" class="hidden">
             <h2>User Register</h2>
             <input type="text" id="userRegisterUsername" placeholder="Username" required>
-            <input type="email" id="userRegisterEmail" placeholder="Email" required>
-            <input type="text" id="userPhoneNumber" placeholder="Phone Number" required>
             <input type="password" id="userRegisterPassword" placeholder="Password" required>
             <input type="password" id="userConfirmPassword" placeholder="Confirm Password" required>
             <button type="submit">Register</button>
@@ -126,52 +127,441 @@
         </form>
     </div>
 
+    <div style="position: fixed; bottom: 10px; right: 10px; opacity: 0.5;">
+        <button id="debugButton" style="font-size: 12px; padding: 5px; width: auto;">Debug</button>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const users = JSON.parse(localStorage.getItem('users')) || { officers: [], normalUsers: [] };
-
-            function registerUser(role, username, password, confirmPassword, errorElement) {
-                if (password !== confirmPassword) {
-                    document.getElementById(errorElement).textContent = "Passwords do not match";
-                    return;
+            // Helper function to ensure localStorage is properly initialized
+            function initializeLocalStorage() {
+                try {
+                    let users = JSON.parse(localStorage.getItem('users'));
+                    
+                    // Check if users object exists and has the correct structure
+                    if (!users || typeof users !== 'object') {
+                        console.log("Creating new users object in localStorage");
+                        users = {
+                            officers: [],
+                            normalUsers: []
+                        };
+                        localStorage.setItem('users', JSON.stringify(users));
+                    } else if (!Array.isArray(users.officers) || !Array.isArray(users.normalUsers)) {
+                        console.log("Fixing users object structure in localStorage");
+                        // Preserve any existing data if possible
+                        users = {
+                            officers: Array.isArray(users.officers) ? users.officers : [],
+                            normalUsers: Array.isArray(users.normalUsers) ? users.normalUsers : []
+                        };
+                        localStorage.setItem('users', JSON.stringify(users));
+                    }
+                    
+                    return true;
+                } catch (error) {
+                    console.error("Error initializing localStorage:", error);
+                    // Reset localStorage if there's an error
+                    localStorage.setItem('users', JSON.stringify({
+                        officers: [],
+                        normalUsers: []
+                    }));
+                    return false;
                 }
-                if (users[role].some(user => user.username === username)) {
-                    document.getElementById(errorElement).textContent = "Username already exists";
-                    return;
-                }
-                users[role].push({ username, password });
-                localStorage.setItem('users', JSON.stringify(users));
-                alert("Registration successful! Please login.");
-                window.location.reload();
             }
+            
+            // Initialize localStorage on page load
+            initializeLocalStorage();
+            
+            // Check for existing login session
+            if (localStorage.getItem("isLoggedIn") === "true") {
+                const username = localStorage.getItem("username");
+                const isOfficer = localStorage.getItem("isOfficerLoggedIn") === "true";
+                
+                alert(`Already logged in as ${isOfficer ? 'Officer' : 'User'}: ${username}\nRedirecting to dashboard...`);
+                window.location.href = 'map.html';
+            }
+            
+            // UI Switching Functions
+            function showForm(formToShow) {
+                // Hide all forms
+                document.getElementById('officerLoginForm').classList.add('hidden');
+                document.getElementById('officerRegisterForm').classList.add('hidden');
+                document.getElementById('userLoginForm').classList.add('hidden');
+                document.getElementById('userRegisterForm').classList.add('hidden');
+                
+                // Show the requested form
+                document.getElementById(formToShow).classList.remove('hidden');
+                
+                // Clear error messages when switching forms
+                document.getElementById('officerError').textContent = "";
+                document.getElementById('officerLoginError').textContent = "";
+                document.getElementById('userError').textContent = "";
+                document.getElementById('userLoginError').textContent = "";
+            }
+            
+            // Toggle between Officer and User views
+            document.getElementById('switchToOfficer').addEventListener('click', function() {
+                document.getElementById('switchToOfficer').classList.add('active');
+                document.getElementById('switchToUser').classList.remove('active');
+                showForm('officerLoginForm');
+            });
+            
+            document.getElementById('switchToUser').addEventListener('click', function() {
+                document.getElementById('switchToUser').classList.add('active');
+                document.getElementById('switchToOfficer').classList.remove('active');
+                showForm('userLoginForm');
+            });
+            
+            // Toggle between Login and Register forms
+            document.getElementById('showOfficerRegisterForm').addEventListener('click', function(e) {
+                e.preventDefault();
+                showForm('officerRegisterForm');
+            });
+            
+            document.getElementById('showOfficerLoginForm').addEventListener('click', function(e) {
+                e.preventDefault();
+                showForm('officerLoginForm');
+            });
+            
+            document.getElementById('showUserRegisterForm').addEventListener('click', function(e) {
+                e.preventDefault();
+                showForm('userRegisterForm');
+            });
+            
+            document.getElementById('showUserLoginForm').addEventListener('click', function(e) {
+                e.preventDefault();
+                showForm('userLoginForm');
+            });
 
+            // Officer registration
             document.getElementById('officerRegisterForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                registerUser("officers", document.getElementById('officerRegisterUsername').value, document.getElementById('officerRegisterPassword').value, document.getElementById('officerConfirmPassword').value, 'officerError');
-            });
-
-            document.getElementById('userRegisterForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                registerUser("normalUsers", document.getElementById('userRegisterUsername').value, document.getElementById('userRegisterPassword').value, document.getElementById('userConfirmPassword').value, 'userError');
-            });
-
-            function loginUser(role, username, password) {
-                const usersList = users[role];
-                if (usersList.some(user => user.username === username && user.password === password)) {
-                    window.location.href = 'map.html';
-                } else {
-                    alert("Invalid credentials!");
+                
+                const username = document.getElementById('officerRegisterUsername').value.trim();
+                const badgeNumber = document.getElementById('officerBadgeNumber').value.trim();
+                const policeStation = document.getElementById('officerPoliceStation').value.trim();
+                const password = document.getElementById('officerRegisterPassword').value;
+                
+                // Clear previous error
+                document.getElementById('officerError').textContent = "";
+                
+                // Validate input fields
+                if (!username || !badgeNumber || !policeStation || !password) {
+                    document.getElementById('officerError').textContent = "All fields are required";
+                    return;
                 }
-            }
+                
+                if (username.length < 3) {
+                    document.getElementById('officerError').textContent = "Username must be at least 3 characters";
+                    return;
+                }
+                
+                if (password.length < 4) {
+                    document.getElementById('officerError').textContent = "Password must be at least 4 characters";
+                    return;
+                }
+                
+                try {
+                    // Get users from localStorage
+                    let users = JSON.parse(localStorage.getItem('users'));
+                    
+                    // Check if users object is properly structured
+                    if (!users || !users.officers || !users.normalUsers) {
+                        users = {
+                            officers: [],
+                            normalUsers: []
+                        };
+                    }
+                    
+                    // Check if username already exists
+                    if (users.officers.some(officer => officer.username.toLowerCase() === username.toLowerCase())) {
+                        document.getElementById('officerError').textContent = "Username already exists";
+                        return;
+                    }
+                    
+                    // Check if badge number already exists
+                    if (users.officers.some(officer => officer.badgeNumber === badgeNumber)) {
+                        document.getElementById('officerError').textContent = "Badge number already registered";
+                        return;
+                    }
+                    
+                    // Create officer data
+                    const officerData = {
+                        username: username,
+                        badgeNumber: badgeNumber,
+                        policeStation: policeStation,
+                        password: password
+                    };
+                    
+                    // Add to officers array
+                    users.officers.push(officerData);
+                    
+                    // Save back to localStorage
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    // Clear form after successful registration
+                    document.getElementById('officerRegisterForm').reset();
+                    
+                    // Registration successful
+                    alert("Officer registered successfully! Please login.");
+                    showForm('officerLoginForm');
+                } catch (error) {
+                    console.error("Registration error details:", error);
+                    document.getElementById('officerError').textContent = "Registration failed: " + (error.message || "Unknown error");
+                }
+            });
 
+            // Officer login
             document.getElementById('officerLoginForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                loginUser("officers", document.getElementById('officerLoginUsername').value, document.getElementById('officerLoginPassword').value);
+                
+                const username = document.getElementById('officerLoginUsername').value.trim();
+                const password = document.getElementById('officerLoginPassword').value;
+                
+                // Clear previous error
+                document.getElementById('officerLoginError').textContent = "";
+                
+                // Validate input fields
+                if (!username || !password) {
+                    document.getElementById('officerLoginError').textContent = "Both username and password are required";
+                    return;
+                }
+                
+                try {
+                    // Get users from localStorage
+                    let users = JSON.parse(localStorage.getItem('users'));
+                    
+                    // Check if users object is properly structured
+                    if (!users || !users.officers || !users.normalUsers) {
+                        users = {
+                            officers: [],
+                            normalUsers: []
+                        };
+                        localStorage.setItem('users', JSON.stringify(users));
+                    }
+                    
+                    // Check if there are any registered officers
+                    if (!users.officers || users.officers.length === 0) {
+                        document.getElementById('officerLoginError').textContent = "No officers registered yet";
+                        return;
+                    }
+                    
+                    // Find matching officer (case insensitive username match)
+                    const officer = users.officers.find(o => 
+                        o.username.toLowerCase() === username.toLowerCase() && o.password === password
+                    );
+                    
+                    if (officer) {
+                        // Store login info
+                        localStorage.setItem("isLoggedIn", "true");
+                        localStorage.setItem("isOfficerLoggedIn", "true");
+                        localStorage.setItem("username", officer.username); // Use exact case from stored data
+                        
+                        // Store officer details
+                        localStorage.setItem("userInfo", JSON.stringify({
+                            username: officer.username,
+                            badgeNumber: officer.badgeNumber,
+                            policeStation: officer.policeStation
+                        }));
+                        
+                        // Clear form fields
+                        document.getElementById('officerLoginForm').reset();
+                        
+                        // Redirect to dashboard
+                        alert("Login successful!");
+                        window.location.href = 'map.html';
+                    } else {
+                        document.getElementById('officerLoginError').textContent = "Invalid username or password";
+                    }
+                } catch (error) {
+                    console.error("Login error details:", error);
+                    document.getElementById('officerLoginError').textContent = "Login failed: " + (error.message || "Unknown error");
+                }
             });
 
+            // User registration
+            document.getElementById('userRegisterForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('userRegisterUsername').value.trim();
+                const password = document.getElementById('userRegisterPassword').value;
+                const confirmPassword = document.getElementById('userConfirmPassword').value;
+                
+                // Clear previous error
+                document.getElementById('userError').textContent = "";
+                
+                // Validate input fields
+                if (!username || !password) {
+                    document.getElementById('userError').textContent = "All fields are required";
+                    return;
+                }
+                
+                // Validate username length
+                if (username.length < 3) {
+                    document.getElementById('userError').textContent = "Username must be at least 3 characters";
+                    return;
+                }
+                
+                // Validate password length
+                if (password.length < 4) {
+                    document.getElementById('userError').textContent = "Password must be at least 4 characters";
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    document.getElementById('userError').textContent = "Passwords do not match";
+                    return;
+                }
+                
+                try {
+                    // Get users from localStorage
+                    let users = JSON.parse(localStorage.getItem('users'));
+                    
+                    // Check if users object is properly structured
+                    if (!users || !users.officers || !users.normalUsers) {
+                        users = {
+                            officers: [],
+                            normalUsers: []
+                        };
+                    }
+                    
+                    // Check if username already exists in either officers or normal users
+                    if (users.normalUsers.some(user => user.username.toLowerCase() === username.toLowerCase()) ||
+                        users.officers.some(officer => officer.username.toLowerCase() === username.toLowerCase())) {
+                        document.getElementById('userError').textContent = "Username already exists";
+                        return;
+                    }
+                    
+                    // Create user data
+                    const userData = {
+                        username: username,
+                        password: password
+                    };
+                    
+                    // Add to normalUsers array
+                    users.normalUsers.push(userData);
+                    
+                    // Save back to localStorage
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    // Clear form after successful registration
+                    document.getElementById('userRegisterForm').reset();
+                    
+                    // Registration successful
+                    alert("User registered successfully! Please login.");
+                    showForm('userLoginForm');
+                } catch (error) {
+                    console.error("Registration error details:", error);
+                    document.getElementById('userError').textContent = "Registration failed: " + (error.message || "Unknown error");
+                }
+            });
+
+            // User login
             document.getElementById('userLoginForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                loginUser("normalUsers", document.getElementById('userLoginUsername').value, document.getElementById('userLoginPassword').value);
+                
+                const username = document.getElementById('userLoginUsername').value.trim();
+                const password = document.getElementById('userLoginPassword').value;
+                
+                // Clear previous error
+                document.getElementById('userLoginError').textContent = "";
+                
+                // Validate input fields
+                if (!username || !password) {
+                    document.getElementById('userLoginError').textContent = "Both username and password are required";
+                    return;
+                }
+                
+                try {
+                    // Get users from localStorage
+                    let users = JSON.parse(localStorage.getItem('users'));
+                    
+                    // Check if users object is properly structured
+                    if (!users || !users.officers || !users.normalUsers) {
+                        users = {
+                            officers: [],
+                            normalUsers: []
+                        };
+                        localStorage.setItem('users', JSON.stringify(users));
+                    }
+                    
+                    // Check if there are any registered users
+                    if (!users.normalUsers || users.normalUsers.length === 0) {
+                        document.getElementById('userLoginError').textContent = "No users registered yet";
+                        return;
+                    }
+                    
+                    // Find matching user (case insensitive username match)
+                    const user = users.normalUsers.find(u => 
+                        u.username.toLowerCase() === username.toLowerCase() && u.password === password
+                    );
+                    
+                    if (user) {
+                        // Store login info
+                        localStorage.setItem("isLoggedIn", "true");
+                        localStorage.setItem("userRole", "normalUsers");
+                        localStorage.setItem("username", user.username); // Use exact case from stored data
+                        
+                        // Store user details
+                        localStorage.setItem("userInfo", JSON.stringify({
+                            username: user.username
+                        }));
+                        
+                        // Clear form fields
+                        document.getElementById('userLoginForm').reset();
+                        
+                        // Redirect to dashboard
+                        alert("Login successful!");
+                        window.location.href = 'map.html';
+                    } else {
+                        document.getElementById('userLoginError').textContent = "Invalid username or password";
+                    }
+                } catch (error) {
+                    console.error("Login error details:", error);
+                    document.getElementById('userLoginError').textContent = "Login failed: " + (error.message || "Unknown error");
+                }
+            });
+
+            // Debug button functionality
+            document.getElementById('debugButton').addEventListener('click', function() {
+                try {
+                    // Get and display localStorage content
+                    const users = JSON.parse(localStorage.getItem('users'));
+                    const isLoggedIn = localStorage.getItem("isLoggedIn");
+                    const isOfficerLoggedIn = localStorage.getItem("isOfficerLoggedIn");
+                    const username = localStorage.getItem("username");
+                    const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+                    
+                    const debugInfo = {
+                        users: users,
+                        loginState: {
+                            isLoggedIn: isLoggedIn,
+                            isOfficerLoggedIn: isOfficerLoggedIn,
+                            username: username,
+                            userInfo: userInfo
+                        },
+                        browserInfo: {
+                            userAgent: navigator.userAgent,
+                            localStorage: typeof localStorage !== 'undefined'
+                        }
+                    };
+                    
+                    console.log("Debug Information:", debugInfo);
+                    alert("Debug info logged to console. Press F12 to view.");
+                    
+                    // Offer to reset localStorage
+                    if (confirm("Would you like to reset the application data?")) {
+                        localStorage.clear();
+                        localStorage.setItem('users', JSON.stringify({
+                            officers: [],
+                            normalUsers: []
+                        }));
+                        alert("Application data reset. Page will reload.");
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    console.error("Debug error:", error);
+                    alert("Error occurred while debugging: " + error.message);
+                }
             });
         });
     </script>
